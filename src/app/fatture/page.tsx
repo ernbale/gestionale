@@ -162,7 +162,7 @@ export default function FatturePage() {
 
       {/* Vista Stampa */}
       {printFattura && (
-        <div className="hidden print:block print:absolute print:inset-0 print:bg-white print:z-50 p-8">
+        <div id="print-area" className="fixed inset-0 bg-white z-[9999] p-8 overflow-auto print-visible">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold">FATTURA</h1>
@@ -240,6 +240,13 @@ export default function FatturePage() {
             <div className="mt-16 text-center text-gray-500 text-sm">
               <p>Grazie per la fiducia!</p>
             </div>
+
+            <button
+              onClick={() => setPrintFattura(null)}
+              className="mt-8 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 no-print"
+            >
+              Chiudi Anteprima
+            </button>
           </div>
         </div>
       )}
@@ -247,18 +254,25 @@ export default function FatturePage() {
       <style jsx global>{`
         @media print {
           body * {
-            visibility: hidden;
+            visibility: hidden !important;
           }
-          .print\\:block, .print\\:block * {
-            visibility: visible;
+          #print-area, #print-area * {
+            visibility: visible !important;
           }
-          .print\\:block {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white;
+          #print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            padding: 20mm !important;
           }
+          .no-print {
+            display: none !important;
+          }
+        }
+        .print-visible {
+          display: block;
         }
       `}</style>
     </div>
