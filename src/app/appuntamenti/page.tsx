@@ -64,13 +64,20 @@ export default function AppuntamentiPage() {
     }
   }
 
+  // Funzione per formattare la data senza conversione timezone
+  const formatDateLocal = (dateStr: string) => {
+    // Rimuove suffisso timezone per evitare conversioni UTC
+    const localDate = dateStr.replace('Z', '').replace(/[+-]\d{2}:\d{2}$/, '')
+    return new Date(localDate)
+  }
+
   const isOggi = (data: string) => {
     const oggi = new Date().toDateString()
-    return new Date(data).toDateString() === oggi
+    return formatDateLocal(data).toDateString() === oggi
   }
 
   const isPast = (data: string) => {
-    return new Date(data) < new Date()
+    return formatDateLocal(data) < new Date()
   }
 
   return (
@@ -135,10 +142,10 @@ export default function AppuntamentiPage() {
                       {isOggi(app.data_inizio) && <span className="px-2 py-0.5 rounded text-xs bg-purple-500 text-white">OGGI</span>}
                     </div>
                     <p className="text-purple-600 font-semibold">
-                      {new Date(app.data_inizio).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                      {formatDateLocal(app.data_inizio).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                       {' alle '}
-                      {new Date(app.data_inizio).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
-                      {app.data_fine && ` - ${new Date(app.data_fine).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`}
+                      {formatDateLocal(app.data_inizio).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                      {app.data_fine && ` - ${formatDateLocal(app.data_fine).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`}
                     </p>
                     {app.cliente && <p className="text-gray-600">Cliente: {app.cliente.nome} {app.cliente.cognome || ''}</p>}
                     {app.luogo && <p className="text-gray-500">Luogo: {app.luogo}</p>}
