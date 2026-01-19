@@ -77,8 +77,8 @@ git commit -m "descrizione modifiche"
 git push vercel main
 ```
 
-## Problemi Noti da Risolvere
-1. **Stampa Fatture**: L'anteprima di stampa mostra pagina quasi vuota - il CSS per la stampa non funziona correttamente
+## Stato Funzionalita'
+- Stampa Fatture: FUNZIONANTE (fix del 19/01/2026)
 
 ## Git Remotes Configurati
 - `origin`: https://github.com/ernbale/gestionale.git
