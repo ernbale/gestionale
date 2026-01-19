@@ -9,7 +9,7 @@
 ## Credenziali Supabase (in .env.local)
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://fapfdxodfyickddfchjv.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhcGZkeG9kZnlpY2tkZGZjaGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczMTU1MDEsImV4cCI6MjA1Mjg5MTUwMX0.qlNtrP12x9TnXHB7V4fKL0KAHEkjOGkLpHrNiXB3Bl4
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhcGZkeG9kZnlpY2tkZGZjaGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTk4NjYsImV4cCI6MjA4NDM3NTg2Nn0.IEgn5rpbX5Mpn83E_dj-TlDYQbTFRPQVl7y3-XDbRCE
 ```
 
 ## Struttura del Progetto
@@ -17,6 +17,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 C:\progetti\gestionale\
 ├── src/
 │   ├── app/
+│   │   ├── layout.tsx        # Layout globale (font, metadata)
 │   │   ├── page.tsx          # Dashboard principale
 │   │   ├── clienti/
 │   │   │   └── page.tsx      # Gestione Clienti (CRM)
@@ -52,7 +53,7 @@ C:\progetti\gestionale\
 3. **Fatture** - Colore: Giallo
    - Creazione fatture con calcolo automatico IVA 22%
    - Stati: bozza, emessa, pagata, annullata
-   - Funzione stampa (DA SISTEMARE - problema CSS)
+   - Funzione stampa con anteprima professionale
 
 4. **Appuntamenti** - Colore: Viola
    - Calendario appuntamenti
