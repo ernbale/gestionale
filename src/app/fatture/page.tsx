@@ -9,6 +9,7 @@ export default function FatturePage() {
   const [clienti, setClienti] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [printFattura, setPrintFattura] = useState<(Fattura & { cliente?: Cliente }) | null>(null)
   const [formData, setFormData] = useState({
     numero: '', cliente_id: '', data_fattura: new Date().toISOString().split('T')[0],
     data_scadenza: '', imponibile: 0, iva: 0, totale: 0, note: '', stato: 'bozza'
@@ -68,6 +69,11 @@ export default function FatturePage() {
       case 'annullata': return 'bg-red-200 text-red-800'
       default: return 'bg-gray-200'
     }
+  }
+
+  function handlePrint(fattura: Fattura & { cliente?: Cliente }) {
+    setPrintFattura(fattura)
+    setTimeout(() => window.print(), 100)
   }
 
   return (
@@ -143,6 +149,7 @@ export default function FatturePage() {
                       </select>
                     </td>
                     <td className="px-4 py-4">
+                      <button onClick={() => handlePrint(fattura)} className="text-blue-600 hover:text-blue-800 mr-3">Stampa</button>
                       <button onClick={() => handleDelete(fattura.id)} className="text-red-600 hover:text-red-800">Elimina</button>
                     </td>
                   </tr>
@@ -152,6 +159,108 @@ export default function FatturePage() {
           </table>
         </div>
       </main>
+
+      {/* Vista Stampa */}
+      {printFattura && (
+        <div className="hidden print:block print:absolute print:inset-0 print:bg-white print:z-50 p-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold">FATTURA</h1>
+              <p className="text-gray-600">N. {printFattura.numero}</p>
+            </div>
+
+            <div className="flex justify-between mb-8">
+              <div>
+                <h3 className="font-bold text-gray-700">Da:</h3>
+                <p className="font-bold">La Tua Azienda</p>
+                <p>Via Example 1</p>
+                <p>00100 Roma (RM)</p>
+                <p>P.IVA: 00000000000</p>
+              </div>
+              <div className="text-right">
+                <h3 className="font-bold text-gray-700">A:</h3>
+                {printFattura.cliente ? (
+                  <>
+                    <p className="font-bold">{printFattura.cliente.nome} {printFattura.cliente.cognome || ''}</p>
+                    {printFattura.cliente.ragione_sociale && <p>{printFattura.cliente.ragione_sociale}</p>}
+                    {printFattura.cliente.indirizzo && <p>{printFattura.cliente.indirizzo}</p>}
+                    {(printFattura.cliente.cap || printFattura.cliente.citta) && (
+                      <p>{printFattura.cliente.cap} {printFattura.cliente.citta} {printFattura.cliente.provincia && `(${printFattura.cliente.provincia})`}</p>
+                    )}
+                    {printFattura.cliente.partita_iva && <p>P.IVA: {printFattura.cliente.partita_iva}</p>}
+                    {printFattura.cliente.codice_fiscale && <p>C.F.: {printFattura.cliente.codice_fiscale}</p>}
+                  </>
+                ) : <p>-</p>}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <p><strong>Data:</strong> {new Date(printFattura.data_fattura).toLocaleDateString('it-IT')}</p>
+              {printFattura.data_scadenza && <p><strong>Scadenza:</strong> {new Date(printFattura.data_scadenza).toLocaleDateString('it-IT')}</p>}
+            </div>
+
+            <table className="w-full mb-8 border-collapse">
+              <thead>
+                <tr className="border-b-2 border-gray-800">
+                  <th className="text-left py-2">Descrizione</th>
+                  <th className="text-right py-2">Importo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="py-2">Servizi/Prodotti</td>
+                  <td className="text-right py-2">€ {printFattura.imponibile.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="flex justify-end">
+              <div className="w-64">
+                <div className="flex justify-between py-1">
+                  <span>Imponibile:</span>
+                  <span>€ {printFattura.imponibile.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span>IVA (22%):</span>
+                  <span>€ {printFattura.iva.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between py-2 border-t-2 border-gray-800 font-bold text-lg">
+                  <span>TOTALE:</span>
+                  <span>€ {printFattura.totale.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {printFattura.note && (
+              <div className="mt-8 pt-4 border-t">
+                <p className="text-gray-600"><strong>Note:</strong> {printFattura.note}</p>
+              </div>
+            )}
+
+            <div className="mt-16 text-center text-gray-500 text-sm">
+              <p>Grazie per la fiducia!</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print\\:block, .print\\:block * {
+            visibility: visible;
+          }
+          .print\\:block {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white;
+          }
+        }
+      `}</style>
     </div>
   )
 }
