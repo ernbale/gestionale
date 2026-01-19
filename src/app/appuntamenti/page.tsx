@@ -30,12 +30,26 @@ export default function AppuntamentiPage() {
     if (data) setClienti(data)
   }
 
+  // Converte datetime-local in ISO con timezone Roma
+  const toRomeTimezone = (dateStr: string) => {
+    if (!dateStr) return null
+    // Aggiunge il timezone di Roma (CET = +01:00, CEST = +02:00)
+    // In gennaio siamo in CET (+01:00)
+    const date = new Date(dateStr)
+    const month = date.getMonth()
+    // Ora legale da ultima domenica di marzo a ultima domenica di ottobre
+    const isDST = month > 2 && month < 9 // Approssimazione semplice
+    const offset = isDST ? '+02:00' : '+01:00'
+    return dateStr + ':00' + offset
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const dataToSave = {
       ...formData,
       cliente_id: formData.cliente_id ? Number(formData.cliente_id) : null,
-      data_fine: formData.data_fine || null
+      data_inizio: toRomeTimezone(formData.data_inizio),
+      data_fine: toRomeTimezone(formData.data_fine)
     }
     await supabase.from('appuntamenti').insert([dataToSave])
     setShowForm(false)
