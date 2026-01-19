@@ -9,6 +9,7 @@ export default function MagazzinoPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProdotto, setEditingProdotto] = useState<Prodotto | null>(null)
+  const [showPrint, setShowPrint] = useState(false)
   const [formData, setFormData] = useState({
     codice: '', nome: '', descrizione: '', categoria: '', unita_misura: 'pz',
     prezzo_acquisto: 0, prezzo_vendita: 0, iva_percentuale: 22,
@@ -79,6 +80,11 @@ export default function MagazzinoPage() {
     }
   }
 
+  function handlePrint() {
+    setShowPrint(true)
+    setTimeout(() => window.print(), 100)
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-green-600 text-white shadow-lg">
@@ -87,9 +93,14 @@ export default function MagazzinoPage() {
             <Link href="/" className="text-green-100 hover:text-white text-sm">&larr; Torna alla Dashboard</Link>
             <h1 className="text-3xl font-bold">Gestione Magazzino</h1>
           </div>
-          <button onClick={() => { setShowForm(true); setEditingProdotto(null); resetForm(); }} className="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-50">
-            + Nuovo Prodotto
-          </button>
+          <div className="flex gap-2">
+            <button onClick={handlePrint} className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-400">
+              Stampa Inventario
+            </button>
+            <button onClick={() => { setShowForm(true); setEditingProdotto(null); resetForm(); }} className="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-50">
+              + Nuovo Prodotto
+            </button>
+          </div>
         </div>
       </header>
 
@@ -164,6 +175,82 @@ export default function MagazzinoPage() {
           </table>
         </div>
       </main>
+
+      {/* Vista Stampa Inventario */}
+      {showPrint && (
+        <div id="print-area" className="fixed inset-0 bg-white z-[9999] p-8 overflow-auto print-visible">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold">INVENTARIO MAGAZZINO</h1>
+              <p className="text-gray-600">Data: {new Date().toLocaleDateString('it-IT')}</p>
+            </div>
+
+            <table className="w-full border-collapse mb-8">
+              <thead>
+                <tr className="border-b-2 border-gray-800">
+                  <th className="text-left py-2 px-2">Codice</th>
+                  <th className="text-left py-2 px-2">Nome</th>
+                  <th className="text-left py-2 px-2">Categoria</th>
+                  <th className="text-right py-2 px-2">Prezzo</th>
+                  <th className="text-right py-2 px-2">Quantita</th>
+                  <th className="text-right py-2 px-2">Valore</th>
+                </tr>
+              </thead>
+              <tbody>
+                {prodotti.map((prodotto) => (
+                  <tr key={prodotto.id} className="border-b">
+                    <td className="py-2 px-2 font-mono">{prodotto.codice}</td>
+                    <td className="py-2 px-2">{prodotto.nome}</td>
+                    <td className="py-2 px-2">{prodotto.categoria || '-'}</td>
+                    <td className="py-2 px-2 text-right">€ {prodotto.prezzo_vendita.toFixed(2)}</td>
+                    <td className="py-2 px-2 text-right">{prodotto.quantita_disponibile} {prodotto.unita_misura}</td>
+                    <td className="py-2 px-2 text-right">€ {(prodotto.prezzo_vendita * prodotto.quantita_disponibile).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="border-t-2 border-gray-800 font-bold">
+                  <td colSpan={4} className="py-2 px-2">TOTALE INVENTARIO</td>
+                  <td className="py-2 px-2 text-right">{prodotti.reduce((acc, p) => acc + p.quantita_disponibile, 0)} pz</td>
+                  <td className="py-2 px-2 text-right">€ {prodotti.reduce((acc, p) => acc + (p.prezzo_vendita * p.quantita_disponibile), 0).toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <button
+              onClick={() => setShowPrint(false)}
+              className="mt-8 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 no-print"
+            >
+              Chiudi Anteprima
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+          #print-area, #print-area * {
+            visibility: visible !important;
+          }
+          #print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background: white !important;
+            padding: 20mm !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+        }
+        .print-visible {
+          display: block;
+        }
+      `}</style>
     </div>
   )
 }
